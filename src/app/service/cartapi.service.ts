@@ -22,18 +22,32 @@ export class CartapiService {
   }
 
   addToCart(product: any) {
-    this.cartItemList.push(product);
+    const index = this.cartItemList.findIndex((item: any) => item.id === product.id);
+
+    if (index !== -1) {
+      // Item already in cart, update quantity
+      this.cartItemList[index].quantity = product.quantity + 1;
+      this.cartItemList[index].total = product.quantity * product.price;
+
+    } else {
+      // Item not in cart, add it
+      this.cartItemList.push(product);
+    }
+    //this.cartItemList.push(product);
     this.productList.next(this.cartItemList);
     this.getTotalPrice();
 
     console.log(this.cartItemList)
   }
 
+ 
+
   getTotalPrice() {
     let grantTotal = 0;
     this.cartItemList.map((a: any) => {
       grantTotal = +a.total;
     })
+    return grantTotal;
   }
 
   removeCartItem(product: any) {
@@ -42,6 +56,7 @@ export class CartapiService {
         this.cartItemList.splice(index, 1);
       }
     })
+    this.productList.next(this.cartItemList);
   }
 
   emptyCartItem() {
